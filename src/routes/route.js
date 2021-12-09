@@ -1,20 +1,22 @@
 const express = require('express');
 const router = express.Router();
 
-const collegeController = require('../controllers/collegeController');
-const internsController = require('../controllers/internsController');
+
+const AuthorController= require("../controllers/authorcontroller")
+const BlogController= require("../controllers/blogController")
+const commonMw=require("../middleware/commonmiddleware")
 
 
-//1)for saving college details
-router.post('/functionUp/Colleges', collegeController.createCollege);
+router.post('/authors',AuthorController.authorsCollection);
+router.post('/blogs',commonMw.validator, BlogController.createBlog);
+router.get("/blogs",commonMw.validator,BlogController.getThisBlog) 
+router.put('/blogs/:blogId',commonMw.validator,BlogController.updateDetails)
+router.delete("/blog/:blogId",commonMw.validator,BlogController.deleteBlog)
+router.delete("/blog",commonMw.validator,BlogController.specificDelete)
 
-//2) for saving intern setails
-router.post('/functionUp/interns', internsController.createInterns);
 
 
-//3)return list of all interns applied for that college
-router.get("/functionup/collegeDetails",internsController.giveAllInterns)
-
+router.post("/login", AuthorController.login)   
 
 
 
