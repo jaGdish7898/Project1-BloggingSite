@@ -8,9 +8,9 @@ const validator = function (req, res, next) {
         console.log(validToken)
         if (validToken) {
              console.log("you can go to main function now")
-            req.validToken=validToken
-            next();
-        }else {
+            req.validToken=validToken                     //setting variable validToken inside req such as
+            next();                                      //req.validToken={_id,iat} sending it to hander as 
+        }else {                                         //we need it there
             res.send({ msg: "invalid Token" })
         }
     } else {

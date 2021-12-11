@@ -21,15 +21,7 @@ const isValidObjectId = function(objectId) {
 //----------------------------------------------------------------------------------------------------------
 const createBlog = async (req, res) => {
     try {
-        //  1) -->to check author is valid or not we will do
-        //const author = await authorModel.findById(req.body.authorId);
-        // if(!author) {
-        //     res.status(400).send({status: false, message: `Author does not exit`})
-        //     return
-        // }
-
-        //2)--> as authentication is happening so while hitting any request author will give token so,to validate him we also can do as belove also,this is the extra option we have to validate the author because of authenticaation(login)
-
+        
         if (!(req.body.authorId == req.validToken._id)) 
         return res.send({status:false,msg:"Author is not valid"})
         
