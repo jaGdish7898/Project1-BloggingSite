@@ -19,7 +19,7 @@ router.delete("/blog",commonMw.validator,BlogController.specificDelete)
 router.post("/login", AuthorController.login) 
 
 
-
+//j
 
 
 
