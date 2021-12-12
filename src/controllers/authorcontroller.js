@@ -125,12 +125,7 @@ const login = async function (req, res) {
 module.exports.authorsCreation = authorsCreation
 module.exports.login = login
 
-const a=(req,res)=>{
-    console.log(req.params)
-    res.send(typeof(req.params))
-}
 
-module.exports.a=a
 
 
 
