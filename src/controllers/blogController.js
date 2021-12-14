@@ -108,47 +108,95 @@ const createBlog = async (req, res) => {
 const updateDetails = async function (req, res) {
 
     try {
-        // let filter={};
-
-        // if(!isValidRequestBody(req.body)) {
-        //     return res.status(400).send({status: false, message: 'Invalid request parameters. Please provide blog details'})
-        // }
-
-        // Extracting containt of body to validate
-        // const {title, body,tags,category,} = req.body;
-
-        // if(!isValid(title)) {
-        //     res.status(400).send({status: false, message: 'title is not valid'})
-        //     return
-        // }
-        // //body is one of the key in blog
-        // if(!isValid(body)) {
-        //     res.status(400).send({status: false, message: 'body is not valid'})
-        //     return
-        // }
-        //tag and subcategory will be a array having values to push.
-
-
         
-        // let Update = {}
-        // console.log()
-        // let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},{ $push:{ tags: req.body.tags }}, { $push: { subcategory: req.body.subcategory } }, { new: true })
-        // if(data)
-        // res.send(data)
-        // else
-        // res.send("not done")
-        // Update.body = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false, authorId: id }, { body: body }, { new: true })
-        // Update.tags = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false, authorId: id }, { $push: { tags: tags } }, { new: true })
-        // Update.subcategory = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false, authorId: id }, { $push: { subcategory: subcategory } }, { new: true })
-        // Update.isPublished = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false, authorId: id }, { isPublished: true }, { new: true })
-        // Update.publishedAt = await blogModel.findOneAndUpdate({ _id: req.params.blogId, isDeleted: false, authorId: id }, { publishedAt: String(new Date()) }, { new: true })
-        // console.log(Update)
-        // let updatedBlog = await blogModel.find({ _id: req.params.blogId, isDeleted: false, authorId: id })
 
-        // res.send({ data: updatedBlog })
-        // console.log(data)
+        if(!isValidObjectId(req.validToken._id)) {
+            res.status(400).send({status: false, message: `${authorId} is not a valid author id`})
+            return
+        }
 
-    } catch (err) {
+        let blog=await blogModel.findOne({_id:req.params.blogId, isDeleted: false})
+        
+        if(!blog){
+            return res.status(404).send({status: false, message: `Blog not found`})
+        }
+
+        if(blog.authorId.toString() !== req.validToken._id) {
+            res.status(401).send({status: false, message: `Unauthorized access! Owner info doesn't match`});
+            return
+        }
+
+        if(!isValidRequestBody(req.body)) {
+            res.status(200).send({status: true, message: 'No paramateres passed. Blog unmodified', data: blog})
+            return
+        }
+
+        // Extract params
+        const {title, body, tags, category, subcategory, isPublished} = requestBody;
+
+        let updateBlog={};
+
+        if(isValid(title)) {
+            if(!isValid(title)) {
+                return res.status(400).send({status: false, message: 'title is not valid'})
+            }
+            updateBlog["title"]=title
+        }
+
+        if(isValid(body)) {
+            if(!isValid(body)) {
+                return res.status(400).send({status: false, message: 'title is not valid'})
+            }
+            updateBlog["body"]=body
+        }
+
+        if(isValid(category)) {
+            if(!isValid(category)) {
+                return res.status(400).send({status: false, message: 'title is not valid'})
+            }
+            updateBlog["category"]=category
+        }
+
+
+        if(isPublished){
+            updateBlog["isPublished"]=true;
+            updateBlog["isPublished"]=new Date();
+        }
+        //for adding value in array with otherthings our update blog should look like this
+        // updateBlog={ $addToSet:{ tags: req.body.tags ,subcategory: req.body.subcategory},title:req.body.title }
+        
+        updateBlog["$addToSet"]={}
+
+        if(tags) {
+            if(Array.isArray(tags) && tags.length>0) {
+                updateBlog.$addToSet["tags"]=tags
+            }
+            if(typeof(tags)===String){
+                updateBlog.$addToSet["tags"]=[tags]
+            }
+        }
+
+        if(subcategory) {
+            if(Array.isArray(subcategory) && subcategory.length>0) {
+                updateBlog.$addToSet["subcategory"]=subcategory
+            }
+            if(typeof(tags)===String){
+                updateBlog.$addToSet["subcategory"]=[subcategory]
+            }
+        }
+
+        let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},updateBlog,{new:true})
+        res.status(201).send({status:true,msg:"data updated successfully",updatedData:data})
+
+
+
+         //let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},{ $addToSet:{ tags: req.body.tags ,subcategory: req.body.    subcategory},title:req.body.title,......}  ,{new:true})
+
+        // let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},{ $addToSet:{ tags:{ $each:req.body.tags} ,subcategory: {$each:req.body.subcategory} },title:req.body.title,...... } ,{new:true} )
+
+        //// let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},{ $push:{ tags: req.body.tags ,subcategory: req.body.subcategory},title:req.body.title,......}  ,{new:true})
+        
+} catch (err) {
         console.log(err)
         res.status(500).send({ msg: err });
     }

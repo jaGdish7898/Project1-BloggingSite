@@ -88,42 +88,37 @@ const login = async function (req, res) {
         }
 
         let {email,password}=req.body
-
         if (!isValid(email)) {
             return res.status(400).send({ status: false, message: 'email is not valid' })
         }
-
         if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
             return res.status(400).send({ status: false, message: `Email should be a valid email address` })
         }
-
         if (!isValid(password)) {
             return res.status(400).send({ status: false, message: 'password is not valid' })
         }
-        
         let author = await authorsModel.findOne(req.body)
 
         if (author) {
             let token = await jwt.sign({ _id: author._id }, "radium")
             res.setHeader("x-api-key", token)
             res.status(200).send({ status: true, msg: "Author logged in successfully" })
-
         } else {
             res.status(404).send({
                 status: false,
                 msg: "invalid Credentials.no Author found."
             })
         }
-
     }
     catch (err) {
         console.log(err)
         res.status(500).send({ status: false, message: err.message })
     }
 }
+module.exports.login = login
 
 module.exports.authorsCreation = authorsCreation
-module.exports.login = login
+
 
 
 
