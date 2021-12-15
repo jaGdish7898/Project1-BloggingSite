@@ -127,12 +127,12 @@ const updateDetails = async function (req, res) {
         }
 
         if(!isValidRequestBody(req.body)) {
-            res.status(200).send({status: true, message: 'No paramateres passed. Blog unmodified', data: blog})
-            return
+            return res.status(400).send({status: false, message: 'Body is empty'})
+            
         }
 
         // Extract params
-        const {title, body, tags, category, subcategory, isPublished} = requestBody;
+        const {title, body, tags, category, subcategory, isPublished} = req.body
 
         let updateBlog={};
 
@@ -160,7 +160,7 @@ const updateDetails = async function (req, res) {
 
         if(isPublished){
             updateBlog["isPublished"]=true;
-            updateBlog["isPublished"]=new Date();
+            updateBlog["publishedAt"]=new Date();
         }
         //for adding value in array with otherthings our update blog should look like this
         // updateBlog={ $addToSet:{ tags: req.body.tags ,subcategory: req.body.subcategory},title:req.body.title }
