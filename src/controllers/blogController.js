@@ -108,57 +108,69 @@ const createBlog = async (req, res) => {
 const updateDetails = async function (req, res) {
 
     try {
-        
-
-        if(!isValidObjectId(req.validToken._id)) {
-            res.status(400).send({status: false, message: `${authorId} is not a valid author id`})
-            return
-        }
-
-        let blog=await blogModel.findOne({_id:req.params.blogId, isDeleted: false})
-        
-        if(!blog){
-            return res.status(404).send({status: false, message: `Blog not found`})
-        }
-
-        if(blog.authorId.toString() !== req.validToken._id) {
-            res.status(401).send({status: false, message: `Unauthorized access! Owner info doesn't match`});
-            return
-        }
 
         if(!isValidRequestBody(req.body)) {
             return res.status(400).send({status: false, message: 'Body is empty'})
             
         }
 
-        // Extract params
+          let filter=new Object
+
+        if(!isValidObjectId(req.params.blogId)) {
+            res.status(400).send({status: false, message: `${req.params.blogId} is not a valid blog id`})
+            return
+        }
+
+        filter["_id"]=req.params.blogId
+
+       if(!isValidObjectId(req.validToken._id)) {
+            res.status(400).send({status: false, message: `Token has no valid id`})
+            return
+        }
+
+        let blog=await blogModel.findOne({_id:req.params.blogId})
+       
+        if(!blog){
+            res.status(400).send({status:false,msg:"no blog found matching to given blogId"})
+            return
+        }
+
+        if(!(blog.authorId==req.validToken._id)){
+            res.status(400).send({status:false,msg:"author is not valid to update this blog"})
+            return
+        }
+        
+        filter["isDeleted"]=false
+        
+        // Extract parameters
+
         const {title, body, tags, category, subcategory, isPublished} = req.body
 
-        let updateBlog={};
+        let updateBlog=new Object;
 
-        if(isValid(title)) {
+
+        if(title)  {
             if(!isValid(title)) {
-                return res.status(400).send({status: false, message: 'title is not valid'})
+                return res.status(400).send({status: false, message: 'valid title is Reuired'})
             }
             updateBlog["title"]=title
         }
-
-        if(isValid(body)) {
+        
+        if(body)  {
             if(!isValid(body)) {
-                return res.status(400).send({status: false, message: 'title is not valid'})
+                return res.status(400).send({status: false, message: 'valid body is required'})
             }
             updateBlog["body"]=body
         }
-
-        if(isValid(category)) {
+        
+        if(category){
             if(!isValid(category)) {
-                return res.status(400).send({status: false, message: 'title is not valid'})
+                return res.status(400).send({status: false, message: 'valid category is required'})
             }
             updateBlog["category"]=category
-        }
-
-
-        if(isPublished){
+         } 
+        
+         if(isPublished){
             updateBlog["isPublished"]=true;
             updateBlog["publishedAt"]=new Date();
         }
@@ -185,20 +197,22 @@ const updateDetails = async function (req, res) {
             }
         }
 
-        let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},updateBlog,{new:true})
-        res.status(201).send({status:true,msg:"data updated successfully",updatedData:data})
 
+      
 
+        //done with filter here 
 
-         //let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},{ $addToSet:{ tags: req.body.tags ,subcategory: req.body.    subcategory},title:req.body.title,......}  ,{new:true})
+        let data= await blogModel.findOneAndUpdate(filter,updateBlog,{new:true})
 
-        // let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},{ $addToSet:{ tags:{ $each:req.body.tags} ,subcategory: {$each:req.body.subcategory} },title:req.body.title,...... } ,{new:true} )
-
-        //// let data= await blogModel.findOneAndUpdate({_id:req.params.blogId},{ $push:{ tags: req.body.tags ,subcategory: req.body.subcategory},title:req.body.title,......}  ,{new:true})
-        
-} catch (err) {
+        if(data){
+            res.status(201).send({status:true,msg:"data updated successfully",updatedData:data})
+        }else{
+            res.status(400).send({status:false,msg:"either the blog is deleted or you are not valid author to access this blog"})
+        }
+    } 
+    catch (err) {
         console.log(err)
-        res.status(500).send({ msg: err });
+        res.status(500).send({ msg: err.message });
     }
 
 }
