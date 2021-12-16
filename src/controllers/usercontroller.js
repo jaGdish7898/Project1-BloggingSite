@@ -1,11 +1,11 @@
-// const authorsModel = require("../models/authorsModel")
+// const authorsModel = require("../models/userModel")
 // const jwt = require('jsonwebtoken')
 // const commonMw = require("../middleware/commonmiddleware")
 // const mongoose  = require("mongoose")
-// const blogModel = require("../models/blogModel")
+// const blogModel = require("../models/bookModel")
 
 
-// //-------------------------------Validation functions----------------------------------------------------
+//-------------------------------Validation functions----------------------------------------------------
 
 // const isValid = function (value) {
 //     if (typeof value === 'undefined' || value === null) return false
