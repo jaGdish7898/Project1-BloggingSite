@@ -1,22 +1,23 @@
 const jwt = require("jsonwebtoken")
 
+let array=[]
+
 
 const validator = function (req, res, next) {
-    let token = req.headers["x-api-key"]
-    if (token) {
-        const validToken = jwt.verify(token, "radium")
-        console.log(validToken)
-        if (validToken) {
-             console.log("you can go to main function now")
-            req.validToken=validToken                     //setting variable validToken inside req such as
-            next();                                      //req.validToken={_id,iat} sending it to hander as 
-        }else {                                         //we need it there
-            res.send({ msg: "invalid Token" })
-        }
-    } else {
-        res.send({ msg: "mandatory header is not present" })
+
+    let count =Math.floor(Math.random()*5-1)+1
+    array.push(count)
+    if(array.length===6){
+        res.status(400).send({msg:"limit exids !!"})
+    }else{
+        next();
     }
+
 }
+
+
+    
+
 
 
 
