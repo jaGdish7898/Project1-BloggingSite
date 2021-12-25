@@ -6,9 +6,11 @@ const AuthorController= require("../controllers/authorcontroller")
 const BlogController= require("../controllers/blogController")
 const commonMw=require("../middleware/commonmiddleware")
 
-
+//Create new Author
 router.post('/createAuthors',AuthorController.authorsCreation);
+//create new blog
 router.post('/blogs',commonMw.validator, BlogController.createBlog);
+//
 router.get("/blogs",commonMw.validator,BlogController.getThisBlog) 
 router.put('/blogs/:blogId',commonMw.validator,BlogController.updateDetails)
 router.delete("/blog/:blogId",commonMw.validator,BlogController.deleteBlogById)
