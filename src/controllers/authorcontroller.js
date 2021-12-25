@@ -28,7 +28,7 @@ const authorsCreation = async function (req, res) {
         if (!funcValidator.isValid(title)) {
             return res.status(400).send({ status: false, message: 'title is not valid' })
         }
-        title=title.trim()
+        title=title.trim()  
         if (!(['Mr', 'Mrs', 'Miss'].includes(title))) {
             return res.status(400).send({ status: false, message: 'Title should be among Mr, Mrs, Miss' })
         }
@@ -87,16 +87,16 @@ const authorsCreation = async function (req, res) {
 const login = async function (req, res) {
 
     try {
-        if(!isValidRequestBody(req.body)) {
+        if(!funcValidator.isValidRequestBody(req.body)) {
             res.status(400).send({status: false, message: 'Invalid request parameters. Please provide login details'})
             return
         }
-        const InputEmail=req.body.email
-        const inputPassword=req.body.password
+        const InputEmail=req.body.email.trim()
+        const inputPassword=req.body.password.trim()
 
-        const author=await authorsModel.find({email:InputEmail})
+        const author=await authorsModel.findOne({email:InputEmail})
 
-        if(!author) return res.status(400).send({ status: false, message: 'invalid login credentials' }) 
+        if(!author) return res.status(404).send({ status: false, message: 'user not exist' }) 
 
         const {password,_id}=author
         const isMatched=await bcrypt.compare(inputPassword, password);

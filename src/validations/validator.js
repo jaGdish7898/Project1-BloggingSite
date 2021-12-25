@@ -1,3 +1,6 @@
+const mongoose  = require("mongoose")
+
+
 const isValid = function(value) {
     if(typeof value === 'undefined' || value === null) return false
     if(typeof value === 'string' && value.trim().length === 0) return false
@@ -21,4 +24,4 @@ const isValidPhoneSyntax = function (value) {
     }
     return true
 }
-module.exports={isValid,isValidRequestBody,isValidObjectId,isValidEmailSyntax,isValidPhoneSyntax}
+module.exports={isValid,isValidRequestBody,isValidObjectId,isValidPhoneSyntax,isValidEmailSyntax}

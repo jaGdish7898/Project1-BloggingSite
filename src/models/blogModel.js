@@ -17,7 +17,7 @@ const blogSchema = new mongoose.Schema(
 
         publishedAt: {type: Date, default: null},  
         isDeleted: { type: Boolean, default: false },
-        deletedAt: {type: String, default: null}, 
+        deletedAt: {type: Date, default: null}, 
 
     }, { timestamps: true }
 );
