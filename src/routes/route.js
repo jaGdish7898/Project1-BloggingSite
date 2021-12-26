@@ -14,11 +14,13 @@ router.post('/blogs',commonMw.validator, BlogController.createBlog);
 router.get("/blogs",commonMw.validator,BlogController.getThisBlog) 
 //update blogs
 router.put('/blogs/:blogId',commonMw.validator,BlogController.updateDetails)
+//delete blog by id
 router.delete("/blog/:blogId",commonMw.validator,BlogController.deleteBlogById)
+//delete blog by query
 router.delete("/blog",commonMw.validator,BlogController.specificDelete)
 
 
-
+//login api
 router.post("/login", AuthorController.login) 
 
 

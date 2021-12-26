@@ -287,7 +287,8 @@ const specificDelete = async function (req, res) {
         const {authorId,tags,category,subcategory,isPublished}=req.query
 
         const filter={
-            isDeleted:false
+            isDeleted:false,
+            authorId:req.validToken._id
         }
         
         if (category) {
@@ -318,10 +319,10 @@ const specificDelete = async function (req, res) {
 
         }
         if (isPublished) {
-            if (!(funcValidator.isValid(isPublished) && isPublished===true)){
-                return res.status(400).send({ status: false, msg: "authorId is not valid" })
+            if (!(funcValidator.isValid(isPublished))){
+                return res.status(400).send({ status: false, msg: "isPublished is not valid" })
             }
-            filter["isPublished"] = true
+            filter["isPublished"] = isPublished
 
         }
         let blogToDelete = await blogModel.updateMany(filter, {
@@ -330,9 +331,9 @@ const specificDelete = async function (req, res) {
         },{new:true});
 
         if (blogToDelete.matchedCount > 0) {
-            res.status(200).send({ status: true, msg: "Blog has been deleted" ,data:blogToDelete});
+            res.status(200).send({ status: true, msg: "Blog has been deleted successfully"});
         } else {
-            res.status(404).send({ status: false, msg: "no such blog exist or blog is already deleted" })
+            res.status(404).send({ status: false, msg: "no such blog exist with this author" })
         }
 
 
